@@ -20,9 +20,6 @@ import java.util.Optional;
 
 @SpringBootApplication
 public class Tp1Application {
-
-	@Autowired
-	private EntityManager entityManager;
 	@Autowired
 	private RubroRepository rubroRepository;
 
@@ -104,10 +101,6 @@ public class Tp1Application {
 			Producto productoRecuperado1 = productoRepository.findById(producto1.getId()).orElse(null);
 			Producto productoRecuperado2 = productoRepository.findById(producto2.getId()).orElse(null);
 
-			//Para que producto este en estado MANAGED y no en DETACHED
-			productoRecuperado1 = entityManager.merge(productoRecuperado1);
-			productoRecuperado2 = entityManager.merge(productoRecuperado2);
-
 			DetallePedido detalle1 = DetallePedido.builder()
 					.cantidad(2)
 					.producto(productoRecuperado1)
@@ -116,8 +109,8 @@ public class Tp1Application {
 					.cantidad(1)
 					.producto(productoRecuperado2)
 					.build();
-			detalle1.setSubtotal(productoRecuperado1.getPrecioVenta());
-			detalle2.setSubtotal(productoRecuperado2.getPrecioVenta());
+			detalle1.setSubtotal(productoRecuperado1.getPrecioVenta() * detalle1.getCantidad());
+			detalle2.setSubtotal(productoRecuperado2.getPrecioVenta() * detalle2.getCantidad());
 			pedido1.anadirDetalle(detalle1);
 			pedido1.anadirDetalle(detalle2);
 			pedido1.setTotal(detalle1.getSubtotal() + detalle2.getSubtotal());
@@ -127,6 +120,9 @@ public class Tp1Application {
 					.fecha(new Date())
 					.total((int)pedido1.getTotal())
 					.build();
+
+			cliente1.anadirPedido(pedido1);
+			pedido1.setFactura(factura);
 
 			//Persistiendo el cliente
 			pedidoRepository.save(pedido1);

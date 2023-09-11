@@ -17,7 +17,7 @@ public class DetallePedido extends EntidadBase {
 
     private double subtotal;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FKproducto")
     private Producto producto;
 }
